@@ -178,15 +178,15 @@ namespace AsmResolver.DotNet.Cloning
                     foreach (var method in type.Methods)
                         Include(method);
 
-                // Include fields.
-                foreach (var field in type.Fields)
-                    Include(field);
+                    // Include fields.
+                    foreach (var field in type.Fields)
+                        Include(field);
 
-                // Include properties.
-                foreach (var property in type.Properties)
-                    Include(property);
+                    // Include properties.
+                    foreach (var property in type.Properties)
+                        Include(property);
 
-                // Include events.
+                    // Include events.
                     foreach (var @event in type.Events)
                         Include(@event);
 
@@ -291,12 +291,14 @@ namespace AsmResolver.DotNet.Cloning
         /// Clones all included members.
         /// </summary>
         /// <returns>An object representing the result of the cloning process.</returns>
-        public MemberCloneResult Clone()
+        public MemberCloneResult Clone(Action<MemberCloneContext>? after = null)
         {
             var context = new MemberCloneContext(_targetModule, _importerFactory);
 
             CreateMemberStubs(context);
             DeepCopyMembers(context);
+
+            after?.Invoke(context);
 
             return new MemberCloneResult(context.ClonedMembers);
         }
@@ -393,7 +395,10 @@ namespace AsmResolver.DotNet.Cloning
             return clonedImplementation;
         }
 
-        private static void CloneCustomAttributes(
+        /// <summary>
+        /// Clones all custom attributes.
+        /// </summary>
+        public static void CloneCustomAttributes(
             MemberCloneContext context,
             IHasCustomAttribute sourceProvider,
             IHasCustomAttribute clonedProvider)
