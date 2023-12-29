@@ -172,9 +172,11 @@ namespace AsmResolver.DotNet.Cloning
                 type = agenda.Pop();
                 _typesToClone.Add(type);
 
-                // Include methods.
-                foreach (var method in type.Methods)
-                    Include(method);
+                if (recursive)
+                {
+                    // Include methods.
+                    foreach (var method in type.Methods)
+                        Include(method);
 
                 // Include fields.
                 foreach (var field in type.Fields)
@@ -185,11 +187,9 @@ namespace AsmResolver.DotNet.Cloning
                     Include(property);
 
                 // Include events.
-                foreach (var @event in type.Events)
-                    Include(@event);
+                    foreach (var @event in type.Events)
+                        Include(@event);
 
-                if (recursive)
-                {
                     // Include remaining nested types.
                     foreach (var nestedType in type.NestedTypes)
                         agenda.Push(nestedType);
